@@ -3,7 +3,7 @@
 
 import sys
 import pygame
-
+from settings import Settings
 
 class AlienInvasion:
     """管理游戏资源和行为的类"""
@@ -11,7 +11,11 @@ class AlienInvasion:
     def __init__(self):
         """ 初始化游戏并创建游戏资源 """
         pygame.init()  ##初始化背景设置，使得Pygame可以正常工作
+        self.settings = Settings()
 
+        self.screen = pygame.display.set_mode(
+            (self.settings.screen_width, self.settings.screem_height)
+        )
         self.screen = pygame.display.set_mode((1200, 800))
         ##调用set_mode来创建显示窗口，宽1200像素，高800像素，并将显示窗口赋给属性self.screen使得类中的每个对象都可以使用它
         pygame.display.set_caption("Alian Invasion")
@@ -29,7 +33,7 @@ class AlienInvasion:
 
 
             """每次循环时都重绘屏幕"""
-            self.screen.fill(self.bg_color) ##fill用于填充屏幕，只有一个实参——颜色
+            self.screen.fill(self.settings.bg_color) ##fill用于填充屏幕，只有一个实参——颜色
 
             """让最近绘制的屏幕可见"""
             pygame.display.flip()  ##每次while循环都会绘制一个空屏幕，并擦去旧屏幕
