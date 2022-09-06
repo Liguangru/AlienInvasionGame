@@ -30,15 +30,21 @@ class AlienInvasion:
         """开始游戏的主循环"""
         while True:  # 不断运行的循环，包含一个事件循环（玩家操作）以及屏幕更新代码
             """监视键盘和鼠标事件"""
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+            self._check_events()
+            self._update_screen()
 
-            """每次循环时都重绘屏幕"""
-            self.screen.fill(self.settings.bg_color)  # fill用于填充屏幕，只有一个实参——颜色
-            self.ship.blitme()
-            """让最近绘制的屏幕可见"""
-            pygame.display.flip()  # 每次while循环都会绘制一个空屏幕，并擦去旧屏幕
+    def _check_events(self):  # 管理事件移到方法_check_events()中
+        """响应按键和鼠标事件"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+    def _update_screen(self):  # 更新屏幕移到方法_update_screen()中
+        """ 每次循环时都重绘屏幕 """
+        self.screen.fill(self.settings.bg_color)  # fill用于填充屏幕，只有一个实参——颜色
+        self.ship.blitme()
+        """让最近绘制的屏幕可见"""
+        pygame.display.flip()  # 每次while循环都会绘制一个空屏幕，并擦去旧屏幕
 
 
 if __name__ == '__main__':
