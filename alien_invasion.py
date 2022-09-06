@@ -4,7 +4,7 @@
 import sys
 import pygame
 from settings import Settings
-
+from ship import Ship
 class AlienInvasion:
     """管理游戏资源和行为的类"""
 
@@ -20,6 +20,7 @@ class AlienInvasion:
         ##调用set_mode来创建显示窗口，宽1200像素，高800像素，并将显示窗口赋给属性self.screen使得类中的每个对象都可以使用它
         pygame.display.set_caption("Alian Invasion")
 
+        self.ship = Ship(self)
         ## 设置背景色
         self.bg_color = (230, 230, 230)  ##RBG值表示颜色
 
@@ -34,7 +35,7 @@ class AlienInvasion:
 
             """每次循环时都重绘屏幕"""
             self.screen.fill(self.settings.bg_color) ##fill用于填充屏幕，只有一个实参——颜色
-
+            self.ship.blitme()
             """让最近绘制的屏幕可见"""
             pygame.display.flip()  ##每次while循环都会绘制一个空屏幕，并擦去旧屏幕
 
