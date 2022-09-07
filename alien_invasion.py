@@ -26,7 +26,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width    # 无法预先知道屏幕宽度和高度，所以创建屏幕后要更新设置
         self.settings.screem_height = self.screen.get_rect().height
-        pygame.display.set_caption("Alian Invasion")
+        pygame.display.set_caption("Alien Invasion")
 
         """创建飞船,子弹和外星人实例"""
         self.ship = Ship(self)          # 创建ship实例，()里的self指向当前AlienInvasion实例，使得Ship可以访问游戏资源（屏幕等）
@@ -44,6 +44,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()      # 飞船位置将在键盘事件之后更新，但是早于屏幕刷新
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
 
     def _check_events(self):  # 管理事件移到方法_check_events()中
@@ -67,7 +68,7 @@ class AlienInvasion:
         elif event.key == pygame.K_SPACE:  # 按下空格键调用_fire_bullet函数发射子弹
             self._fire_bullet()
 
-    def _check_keyup_events(self,event):
+    def _check_keyup_events(self, event):
         """响应松开"""
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False  # 如果按键松开，就将self.moving_right设为False，停止向右移动
@@ -91,6 +92,11 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:       # 检查子弹的rect的bottom属性，如果小于等于0，则子弹已经飞出屏幕
                 self.bullets.remove(bullet)   # 如果是，就将其从编组bullets中删除
         # print(len(self.bullets))            # 显示子弹数量，如果逐渐变为0，则说明飞出的子弹已经删除。注意：此print仅作为测试。
+
+    def _update_aliens(self):
+        """检查是否碰到屏幕边缘并更新外星人的位置"""
+        self._check_fleet_edges()
+        self.aliens.update()
 
     def _creat_fleet(self):
         """创建外星人群"""
@@ -118,11 +124,24 @@ class AlienInvasion:
         # 创建一个外星人并放入当前行
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
-        alien.rect.x = alien_width + 2 * alien_width * alien_number
-        # 每个外星人都向右推1个宽度，并将宽度乘以2以得到每个外星人占据的空间（外星人本身宽度加上右边的空白）
-        # 由此得到当前外星人在当前行的位置
-        alien.rect.y = alien_height + 2 * alien_height * row_number  # 修改外星人的y坐标
+        alien.x = alien_width + 2 * alien_width * alien_number  # 注意此处为什么使用alien.x，因为其可以存储小数值，见alien.py，下面的alien.y则不可以
+        alien.rect.x = alien.x  # 每个外星人都向右推1个宽度，并将宽度乘以2以得到每个外星人占据的空间（外星人本身宽度加上右边的空白）
+                                # 由此得到当前外星人在当前行的位置
+        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number  # 修改外星人的y坐标
         self.aliens.add(alien)  # 将其添加到用于存储外星人的编组中，外星人位置从左上角开始
+
+    def _check_fleet_edges(self):
+        """有外星人到达屏幕边缘后采取相应措施"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():    # 如果碰到屏幕边缘就会返回True，就会调用_change_fleet_direction()并退出循环
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """将整群外星人下移并改变移动方向"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1  # 方向值乘以-1，下次移动时会向反方向移动
 
     def _update_screen(self):   # 更新屏幕移到方法_update_screen()中
         """ 每次循环时都重绘屏幕 """

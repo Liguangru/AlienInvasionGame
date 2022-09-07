@@ -18,3 +18,9 @@ class Settings:
         self.bullet_height = 15
         self.bullet_color = (60, 60, 60)    # 创建宽3像素，高15像素的深灰色子弹
         self.bullets_allowed = 8  # 设置最大子弹数，对同时出现在屏幕上的子弹进行限制，鼓励玩家有目标的射击敌人
+
+        # 外星人设置
+        self.alien_speed = 1.0   # 设置外星人速度
+        self.fleet_drop_speed = 10
+        # fleet_direction为1表示右移，-1表示左移，这样可以通过加减x坐标实现左右移动
+        self.fleet_direction = 1
