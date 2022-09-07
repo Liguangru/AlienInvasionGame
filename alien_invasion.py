@@ -78,6 +78,9 @@ class AlienInvasion:
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)  # collidepoint可以检查鼠标坐标是否在Play按钮的rect内
         if button_clicked and not self.stats.game_active:   # 游戏仅在game_active为False即游戏处于非活动状态并单击Play按钮时开始，
                                                             # 因为Play按钮即使不可见，单击其所在区域时也会响应
+            # 重置游戏设置，使得游戏节奏回到初始值
+            self.settings.initialize_dynamic_settings()
+
             # 重置游戏统计信息
             self.stats.reset_stats()
             self.stats.game_active = True
@@ -141,6 +144,7 @@ class AlienInvasion:
             # 删除现有的子弹并新建一群外星人
             self.bullets.empty()
             self._creat_fleet()
+            self.settings.increase_speed()
 
     def _update_aliens(self):
         """检查是否碰到屏幕边缘并更新外星人的位置"""

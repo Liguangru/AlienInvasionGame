@@ -2,7 +2,7 @@ class Settings:
     """存储游戏《外形人入侵》中所有设置的类"""
 
     def __init__(self):
-        """初始化游戏的设置"""
+        """初始化游戏的静态设置"""
 
         # 屏幕设置
         self.screen_width = 1200
@@ -23,5 +23,22 @@ class Settings:
         # 外星人设置
         self.alien_speed = 1.0   # 设置外星人速度
         self.fleet_drop_speed = 10
-        # fleet_direction为1表示右移，-1表示左移，这样可以通过加减x坐标实现左右移动
+        # 加快游戏节奏的速度
+        self.speedup_scale = 1.1  # 设为2表示玩家每提高一个等级游戏节奏就翻一倍，设为1表示节奏不变
+
+        self.initialize_dynamic_settings()
+
+    def initialize_dynamic_settings(self):
+        """初始化随游戏进行而变化的节奏"""
+        self.ship_speed = 1.5
+        self.bullet_speed = 3.0
+        self.alien_speed = 1.0
+
+        # fleet_direction = 1 represents right; = -1 represents left.
         self.fleet_direction = 1
+
+    def increase_speed(self):
+        """提高速度设置"""
+        self.ship_speed *= self.speedup_scale
+        self.bullet_speed *= self.speedup_scale
+        self.alien_speed *= self.speedup_scale
