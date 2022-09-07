@@ -1,7 +1,7 @@
 # AlienInvasionGame
 《Python编程-入门到实践》书中的实例项目1
 ## alien_invasion.py
-包含**AlienInvasion**类，这个类创建一系列游戏中所需要的属性：赋给self.settings的设置，赋给screen中的主显示surface，以及一个飞船实例。  
+包含**AlienInvasion**类，这个类创建一系列游戏中所需要的属性：赋给self.settings的设置，赋给screen中的主显示surface，以及飞船、子弹等实例。  
 此外还包含游戏的主循环，即while循环。while循环中调用_check_events()、ship.update()和_update_screen()。  
 方法_check_events()检测相关的事件（例如按下和松开按键），并通过调用方法_check_keydown_events()和_check_keyup_events()处理这些事件。这些方法主要负责飞船的移动。  
 **玩游戏时只需运行文件alian_invasion.py**
