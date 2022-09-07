@@ -88,10 +88,23 @@ class AlienInvasion:
 
         # 删除飞出屏幕的子弹
         for bullet in self.bullets.copy():    # 创建一个副本，使用for循环遍历副本。原因是for循环遍历列表或编组时，要求列表长度不变。
-            # 因此不可以在for循环遍历的列表或者编组中删除元素。
+                                              # 因此不可以在for循环遍历的列表或者编组中删除元素。
             if bullet.rect.bottom <= 0:       # 检查子弹的rect的bottom属性，如果小于等于0，则子弹已经飞出屏幕
                 self.bullets.remove(bullet)   # 如果是，就将其从编组bullets中删除
         # print(len(self.bullets))            # 显示子弹数量，如果逐渐变为0，则说明飞出的子弹已经删除。注意：此print仅作为测试。
+
+        self._check_bullet_alien_collisions()
+
+    def _check_bullet_alien_collisions(self):
+        # 检查是否有子弹击中外星人
+        # 如果是，就删除相应的子弹和外星人
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, True)    # 这里的True的作用是删除对应的实例（即子弹或者外星人），设为false则为不删除
+
+        if not self.aliens:   # 检查aliens是否为空，若为空。相当于False，就删除子弹并更新外星人
+            # 删除现有的子弹并新建一群外星人
+            self.bullets.empty()
+            self._creat_fleet()
 
     def _update_aliens(self):
         """检查是否碰到屏幕边缘并更新外星人的位置"""
