@@ -8,6 +8,7 @@ import pygame
 
 from settings import Settings
 from game_stats import Gamestats
+from button import  Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -44,6 +45,9 @@ class AlienInvasion:
         """设置背景色"""
         self.bg_color = (230, 230, 230)  # RBG值表示颜色
 
+        """创建Play按钮"""
+        self.play_button = Button(self, "Play")
+
     def run_game(self):
         """开始游戏的主循环"""
         while True:  # 不断运行的循环，包含一个事件循环（玩家操作）以及屏幕更新代码
@@ -65,6 +69,29 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()   # 返回一个元组，其中包含玩家单击时鼠标的x和y坐标
+                self._check_play_button(mouse_pos)   # 将坐标传递给方法_check_play_button
+
+    def _check_play_button(self, mouse_pos):
+        """玩家单击Play时开始新游戏"""
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)  # collidepoint可以检查鼠标坐标是否在Play按钮的rect内
+        if button_clicked and not self.stats.game_active:   # 游戏仅在game_active为False即游戏处于非活动状态并单击Play按钮时开始，
+                                                            # 因为Play按钮即使不可见，单击其所在区域时也会响应
+            # 重置游戏统计信息
+            self.stats.reset_stats()
+            self.stats.game_active = True
+
+            # 清空余下的外星人和子弹
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # 创建一群新的外星人并让飞船居中
+            self._creat_fleet()
+            self.ship.center_ship()
+
+            # 游戏进行时隐藏鼠标
+            pygame.mouse.set_visible(False)
 
     def _check_keydown_events(self, event):
         """响应按键"""
@@ -156,6 +183,7 @@ class AlienInvasion:
             sleep(1)
         else:
             self.stats.game_active = False
+            pygame.mouse.get_visible(True)    # 游戏进入非活动状态后鼠标可见
 
     def _creat_fleet(self):
         """创建外星人群"""
@@ -210,6 +238,10 @@ class AlienInvasion:
             bullet.draw_bullet()        # bullets.sprites()返回一个列表，其中包含编组bullets中的所有sprite。
                                         # 为了绘制所有的子弹，遍历编组中的所有sprite并对每个sprite调用draw_bullet
         self.aliens.draw(self.screen)   # 绘制外星人  # draw()使用时，Pygame会将编组中的每个元素都绘制到属性rect指定的地方
+
+        """ 如果游戏处于非活动状态就绘制Play按钮"""
+        if not self.stats.game_active:
+            self.play_button.draw_button()
 
         """让最近绘制的屏幕可见"""
         pygame.display.flip()  # 每次while循环都会绘制一个空屏幕，并擦去旧屏幕
