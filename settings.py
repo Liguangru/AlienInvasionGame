@@ -11,6 +11,7 @@ class Settings:
 
         # 飞船设置
         self.ship_speed = 2  # 速度设置为小数方便调节，但是rect.x之可以存储整数值。所以需要在Ship类中修改
+        self.ship_limit = 5  # 玩家拥有的飞船数量
 
         # 子弹设置
         self.bullet_speed = 1.0
