@@ -18,7 +18,7 @@ class Ship:
         # 对于每艘新飞船，都将其放在屏幕底部的中央
         self.rect.midbottom = self.screen_rect.midbottom
 
-        # 在飞船的属性x中存储小孩值
+        # 在飞船的属性x中存储小数值
         self.x = float(self.rect.x)
 
         # 移动标志
