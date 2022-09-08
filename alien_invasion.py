@@ -8,6 +8,7 @@ import pygame
 
 from settings import Settings
 from game_stats import Gamestats
+from scoreboard import Scoreboard
 from button import  Button
 from ship import Ship
 from bullet import Bullet
@@ -34,7 +35,9 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion")
 
         """创建统计游戏信息的实例"""
+        """并创建得分牌"""
         self.stats = Gamestats(self)
+        self.sb = Scoreboard(self)
 
         """创建飞船,子弹和外星人实例"""
         self.ship = Ship(self)          # 创建ship实例，()里的self指向当前AlienInvasion实例，使得Ship可以访问游戏资源（屏幕等）
@@ -84,6 +87,9 @@ class AlienInvasion:
             # 重置游戏统计信息
             self.stats.reset_stats()
             self.stats.game_active = True
+            self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
 
             # 清空余下的外星人和子弹
             self.aliens.empty()
@@ -140,11 +146,23 @@ class AlienInvasion:
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)    # 这里的True的作用是删除对应的实例（即子弹或者外星人），设为false则为不删除
 
+        if collisions:  # 击中外星人时加分
+            # 碰撞的子弹都是字典collisions中的一个键，和每颗子弹相关的值都是一个列表，包括消灭的外星人
+            for aliens in collisions.values():  # 遍历collsions确保每个消灭的外星人都记入得分
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()   # 显示新的得分图像
+            self.sb.check_high_score()  # 检查是否有新的最高得分
+
         if not self.aliens:   # 检查aliens是否为空，若为空。相当于False，就删除子弹并更新外星人
             # 删除现有的子弹并新建一群外星人
             self.bullets.empty()
             self._creat_fleet()
-            self.settings.increase_speed()
+            self.settings.increase_speed()  # 消灭所有敌人后就加快游戏节奏提高游戏难度
+
+            # 提高等级
+            self.stats.level += 1  # 消灭完敌人后增加等级
+            self.sb.prep_level()   # 将新等级显示出来
+
 
     def _update_aliens(self):
         """检查是否碰到屏幕边缘并更新外星人的位置"""
@@ -172,8 +190,9 @@ class AlienInvasion:
     def _ship_hit_(self):
         """响应飞船被外星人撞到"""
         if self.stats.ships_left > 0:
-            # 将ships_left减1
+            # 将ships_left减1并更新剩余飞船
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # 清空余下的外星人和子弹
             self.aliens.empty()
@@ -242,6 +261,9 @@ class AlienInvasion:
             bullet.draw_bullet()        # bullets.sprites()返回一个列表，其中包含编组bullets中的所有sprite。
                                         # 为了绘制所有的子弹，遍历编组中的所有sprite并对每个sprite调用draw_bullet
         self.aliens.draw(self.screen)   # 绘制外星人  # draw()使用时，Pygame会将编组中的每个元素都绘制到属性rect指定的地方
+
+        """现实得分"""
+        self.sb.show_score()
 
         """ 如果游戏处于非活动状态就绘制Play按钮"""
         if not self.stats.game_active:
